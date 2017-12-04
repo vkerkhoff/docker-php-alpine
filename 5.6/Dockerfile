@@ -23,7 +23,6 @@ RUN apk add --no-cache \
     php5-json \
     php5-openssl \
     php5-opcache \
-    php5-mcrypt \
     php5-mysqli \
     php5-pgsql \
     php5-pdo_mysql \
