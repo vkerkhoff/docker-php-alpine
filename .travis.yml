@@ -7,7 +7,6 @@ services:
 
 env:
   matrix:
-    - VER=5.6
     - VER=7.0
     - VER=7.1
     - VER=7.2
