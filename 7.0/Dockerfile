@@ -47,6 +47,7 @@ RUN apk add --no-cache \
     php7-zip \
     php7-zlib \
     git \
+    bash \
     && apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ --allow-untrusted \
     gnu-libiconv
 
