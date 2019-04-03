@@ -2,7 +2,7 @@ SHELL = /bin/bash
 
 docker_bats := docker run --rm \
 		-v $$(pwd):/app -v /var/run/docker.sock:/var/run/docker.sock \
-		graze/bats
+		vkerkhoff/bats
 
 build_args := --build-arg BUILD_DATE=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ") \
               --build-arg VCS_REF=$(shell git rev-parse --short HEAD)
@@ -19,24 +19,24 @@ latest := 7.2
 .PHONY: deploy
 
 .DEFAULT: build
-build: build-5.6 build-7.0 build-7.1 build-7.2
+build: build-7.0 build-7.1 build-7.2
 build-quick:
 	make build cache="" pull=""
 
-tag: tag-5.6 tag-7.0 tag-7.1 tag-7.2
-test: test-5.6 test-7.0 test-7.1 test-7.2
-push: push-5.6 push-7.0 push-7.1 push-7.2
-clean: clean-5.6 clean-7.0 clean-7.1 clean-7.2
-deploy: deploy-5.6 deploy-7.0 deploy-7.1 deploy-7.2
+tag: tag-7.0 tag-7.1 tag-7.2
+test: test-7.0 test-7.1 test-7.2
+push: push-7.0 push-7.1 push-7.2
+clean: clean-7.0 clean-7.1 clean-7.2
+deploy: deploy-7.0 deploy-7.1 deploy-7.2
 
 build-%: cache ?= --no-cache
 build-%: pull ?= --pull
 build-%: ## build a generic image
-	docker build ${build_args} ${cache} ${pull} -t graze/php-alpine:$* $*/.
-	docker build ${build_args} ${cache} -t graze/php-alpine:$*-test -f $*/Dockerfile.debug $*/.
+	docker build ${build_args} ${cache} ${pull} -t vkerkhoff/php-alpine:$* $*/.
+	docker build ${build_args} ${cache} -t vkerkhoff/php-alpine:$*-test -f $*/Dockerfile.debug $*/.
 
 clean-%: ## Clean up the images
-	docker rmi $$(docker images -q graze/php-alpine:$**) || echo "no images"
+	docker rmi $$(docker images -q vkerkhoff/php-alpine:$**) || echo "no images"
 
 deploy-%: ## Deploy a specific version
 	make tag-$* push-$*
@@ -49,35 +49,35 @@ test-%: ## Test a version
 tag-%: ## Tag an image
 	@if [ "$*" = "${latest_5}" ]; then \
 		echo "Tagging latest 5.x version ($*)"; \
-		docker tag graze/php-alpine:$*-test graze/php-alpine:5-test; \
-		docker tag graze/php-alpine:$* graze/php-alpine:5; \
+		docker tag vkerkhoff/php-alpine:$*-test vkerkhoff/php-alpine:5-test; \
+		docker tag vkerkhoff/php-alpine:$* vkerkhoff/php-alpine:5; \
 	fi
 	@if [ "$*" = "${latest_7}" ]; then \
 		echo "Tagging latest 7.x version ($*)"; \
-		docker tag graze/php-alpine:$*-test graze/php-alpine:7-test; \
-		docker tag graze/php-alpine:$* graze/php-alpine:7; \
+		docker tag vkerkhoff/php-alpine:$*-test vkerkhoff/php-alpine:7-test; \
+		docker tag vkerkhoff/php-alpine:$* vkerkhoff/php-alpine:7; \
 	fi
 	@if [ "$*" = "${latest}" ]; then \
 		echo "Tagging latest version ($*)"; \
-		docker tag graze/php-alpine:$*-test graze/php-alpine:test; \
-		docker tag graze/php-alpine:$* graze/php-alpine:latest; \
+		docker tag vkerkhoff/php-alpine:$*-test vkerkhoff/php-alpine:test; \
+		docker tag vkerkhoff/php-alpine:$* vkerkhoff/php-alpine:latest; \
 	fi
 
 push-%: ## Push an image
-	docker push graze/php-alpine:$*-test
-	docker push graze/php-alpine:$*
+	docker push vkerkhoff/php-alpine:$*-test
+	docker push vkerkhoff/php-alpine:$*
 	@if [ "$*" = "${latest_5}" ]; then \
 		echo "Pushing latest 5.x version ($*)"; \
-		docker push graze/php-alpine:5-test; \
-		docker push graze/php-alpine:5; \
+		docker push vkerkhoff/php-alpine:5-test; \
+		docker push vkerkhoff/php-alpine:5; \
 	fi
 	@if [ "$*" = "${latest_7}" ]; then \
 		echo "Pushing latest 7.x version ($*)"; \
-		docker push graze/php-alpine:7-test; \
-		docker push graze/php-alpine:7; \
+		docker push vkerkhoff/php-alpine:7-test; \
+		docker push vkerkhoff/php-alpine:7; \
 	fi
 	@if [ "$*" = "${latest}" ]; then \
 		echo "Pushing latest version ($*)"; \
-		docker push graze/php-alpine:test; \
-		docker push graze/php-alpine:latest; \
+		docker push vkerkhoff/php-alpine:test; \
+		docker push vkerkhoff/php-alpine:latest; \
 	fi
